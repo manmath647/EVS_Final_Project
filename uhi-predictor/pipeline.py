@@ -21,7 +21,7 @@ def load_model():
             print(f"Error loading model: {e}")
             return None
     else:
-        print("WARNING: uhi_model.pkl not found — using rule-based fallback")
+        print("ERROR: uhi_model.pkl not found.")
         return None
 
 # Load model once at module level
@@ -62,25 +62,11 @@ def fetch_live_temps(lat, lon):
 
 def predict_severity(features, model):
     """
-    Predict severity using the model if available, else use a rule-based fallback.
-    Severity labeling logic (used by Krishna in Colab):
-    - temp >= 38 and green <= 20 -> 3 (Severe)
-    - temp >= 34 and green <= 35 -> 2 (Moderate)
-    - temp >= 30 and green <= 50 -> 1 (Mild)
-    - else -> 0 (None)
+    Predict severity using the ML model.
     """
-    if model is not None:
-        return int(model.predict(np.array([features]))[0])
-    else:
-        # Rule-based fallback using Temperature (index 0) and Urban Greenness Ratio (index 5)
-        temp = features[0]
-        # In FEATURE_COLUMNS, index 5 is Urban Greenness Ratio
-        green = features[5] 
-        
-        if temp >= 38 and green <= 20:   return 3
-        elif temp >= 34 and green <= 35: return 2
-        elif temp >= 30 and green <= 50: return 1
-        else:                            return 0
+    if model is None:
+        raise ValueError("Machine Learning model is not loaded! App cannot predict without the XGBoost engine.")
+    return int(model.predict(np.array([features]))[0])
 
 def predict_uhi(city_name):
     """

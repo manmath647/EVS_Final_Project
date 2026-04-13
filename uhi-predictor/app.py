@@ -26,45 +26,46 @@ header {visibility: hidden;}
 
 /* Main background */
 .stApp {
-    background-color: #0a0e1a;
+    background-color: #f8fafc;
 }
 
 /* Sidebar styling */
 [data-testid="stSidebar"] {
-    background-color: #0f172a;
-    border-right: 1px solid #1e293b;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
 }
 
 /* Metric cards */
 [data-testid="stMetric"] {
-    background-color: #1e293b;
-    border: 1px solid #334155;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 10px;
     padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 [data-testid="stMetricLabel"] {
-    color: #94a3b8 !important;
+    color: #64748b !important;
     font-size: 12px !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
 [data-testid="stMetricValue"] {
-    color: white !important;
+    color: #0f172a !important;
     font-size: 28px !important;
     font-weight: 600 !important;
 }
 
 /* Tab styling */
 [data-testid="stTabs"] button {
-    color: #94a3b8;
+    color: #64748b;
     font-weight: 500;
     font-size: 14px;
 }
 
 [data-testid="stTabs"] button[aria-selected="true"] {
-    color: white;
+    color: #0f172a;
     border-bottom-color: #3b82f6;
 }
 
@@ -83,7 +84,7 @@ header {visibility: hidden;}
 
 /* Divider */
 hr {
-    border-color: #1e293b;
+    border-color: #e2e8f0;
 }
 
 /* Spinner */
@@ -95,17 +96,15 @@ hr {
 
 if "map_data" not in st.session_state:
     st.session_state.map_data = []
-if "grid_data" not in st.session_state:
-    st.session_state.grid_data = None
 
 st.markdown("""
 <div style="padding: 24px 0 8px 0;">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
         <span style="font-size:36px;">🌡️</span>
         <div>
-            <h1 style="margin:0; font-size:28px; font-weight:700; color:white; 
+            <h1 style="margin:0; font-size:28px; font-weight:700; color:#0f172a; 
                         letter-spacing:-0.02em;">Urban Heat Island Predictor</h1>
-            <p style="margin:0; font-size:13px; color:#64748b;">
+            <p style="margin:0; font-size:13px; color:#475569;">
                 India · Live AI analysis · Powered by Open-Meteo API + XGBoost ML
             </p>
         </div>
@@ -115,50 +114,50 @@ st.markdown("""
 
 if os.path.exists(MODEL_PATH):
     st.markdown("""
-    <div style="background:#052e16; border:1px solid #16a34a; border-radius:8px; 
+    <div style="background:#f0fdf4; border:1px solid #22c55e; border-radius:8px; 
                 padding:8px 16px; display:inline-block; margin-bottom:12px;">
-        <span style="color:#22c55e; font-size:13px; font-weight:500;">
+        <span style="color:#15803d; font-size:13px; font-weight:600;">
             ● ML Model Active — XGBoost classifier loaded
         </span>
     </div>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
-    <div style="background:#1c1917; border:1px solid #d97706; border-radius:8px; 
+    <div style="background:#fef2f2; border:1px solid #ef4444; border-radius:8px; 
                 padding:8px 16px; display:inline-block; margin-bottom:12px;">
-        <span style="color:#f59e0b; font-size:13px; font-weight:500;">
-            ● Preview Mode — Rule-based fallback active
+        <span style="color:#b91c1c; font-size:13px; font-weight:600;">
+            ● ML Model Offline — App will not predict!
         </span>
     </div>
     """, unsafe_allow_html=True)
 
 with st.sidebar:
     st.markdown("""
-    <div style="padding:16px 0 8px 0; border-bottom:1px solid #1e293b; margin-bottom:16px;">
-        <p style="color:white; font-size:16px; font-weight:600; margin:0;">UHI Predictor</p>
-        <p style="color:#475569; font-size:11px; margin:0;">Urban Heat Island Monitor · India</p>
+    <div style="padding:16px 0 8px 0; border-bottom:1px solid #e2e8f0; margin-bottom:16px;">
+        <p style="color:#0f172a; font-size:16px; font-weight:600; margin:0;">UHI Predictor</p>
+        <p style="color:#64748b; font-size:11px; margin:0;">Urban Heat Island Monitor · India</p>
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown('<p style="color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Select City</p>', unsafe_allow_html=True)
-    selected_city = st.selectbox("", options=list(CITIES.keys()), label_visibility="collapsed")
+    st.markdown('<p style="color:#64748b; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Select City</p>', unsafe_allow_html=True)
+    selected_city = st.selectbox("Select City", options=list(CITIES.keys()), label_visibility="collapsed")
     predict_btn = st.button("Predict UHI →", type="primary", use_container_width=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    st.markdown('<p style="color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Severity Scale</p>', unsafe_allow_html=True)
+    st.markdown('<p style="color:#64748b; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Severity Scale</p>', unsafe_allow_html=True)
     severity_info = {
-        "None":     ("#06b6d4", "< 1°C difference"),
-        "Mild":     ("#22c55e", "1 – 2.5°C difference"),
-        "Moderate": ("#f59e0b", "2.5 – 4°C difference"),
-        "Severe":   ("#dc2626", "> 4°C difference"),
+        "None":     ("#06b6d4", "No thermal anomaly"),
+        "Mild":     ("#22c55e", "ML detecting emerging UHI"),
+        "Moderate": ("#f59e0b", "Strong algorithmic confidence"),
+        "Severe":   ("#dc2626", "Critical heat identified by Model"),
     }
     for level, (color, desc) in severity_info.items():
         st.markdown(f"""
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
             <div style="width:10px; height:10px; border-radius:50%; background:{color}; flex-shrink:0;"></div>
             <div>
-                <span style="color:white; font-size:12px; font-weight:500;">{level}</span>
+                <span style="color:#0f172a; font-size:12px; font-weight:600;">{level}</span>
                 <span style="color:#475569; font-size:11px;"> — {desc}</span>
             </div>
         </div>
@@ -167,10 +166,10 @@ with st.sidebar:
     st.markdown("<br>", unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background:#0f172a; border-radius:8px; padding:10px 12px; 
-                border:1px solid #1e293b;">
-        <p style="color:#94a3b8; font-size:11px; text-transform:uppercase; 
-                   letter-spacing:0.08em; margin:0 0 4px 0;">What is UHI?</p>
+    <div style="background:#f1f5f9; border-radius:8px; padding:10px 12px; 
+                border:1px solid #e2e8f0;">
+        <p style="color:#475569; font-size:11px; text-transform:uppercase; 
+                   letter-spacing:0.08em; margin:0 0 4px 0; font-weight:600;">What is UHI?</p>
         <p style="color:#64748b; font-size:11px; margin:0; line-height:1.5;">
             Urban areas are significantly hotter than surrounding rural areas 
             due to concrete, reduced greenery, and human activity.
@@ -179,49 +178,13 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    st.caption("Live data: Open-Meteo API\nModel: XGBoost Classifier\nTeam Tech Titans 2026")
+    st.markdown('<p style="color:#94a3b8; font-size:10px;">Live data: Open-Meteo API<br>Model: XGBoost Classifier<br>Team Tech Titans 2026</p>', unsafe_allow_html=True)
 
-@st.cache_data(ttl=1800)
-def load_grid_data():
-    lat_range = [float(x) for x in range(8, 38)]
-    lon_range = [float(x) for x in range(68, 98)]
-    
-    grid_points = []
-    for lat in lat_range:
-        for lon in lon_range:
-            grid_points.append({"lat": lat, "lon": lon})
-            
-    grid_df = pd.DataFrame(grid_points)
-    
-    batch_size = 50
-    temps = []
-    for i in range(0, len(grid_df), batch_size):
-        batch = grid_df.iloc[i:i+batch_size]
-        
-        try:
-            r = requests.get("https://api.open-meteo.com/v1/forecast", params={
-                "latitude": batch["lat"].tolist(),
-                "longitude": batch["lon"].tolist(),
-                "current": "temperature_2m",
-                "timezone": "Asia/Kolkata"
-            }, timeout=15)
-            r.raise_for_status()
-            data = r.json()
-            
-            if isinstance(data, list):
-                for item in data:
-                    temps.append(item.get("current", {}).get("temperature_2m", None))
-            else:
-                temps.append(data.get("current", {}).get("temperature_2m", None))
-        except Exception as e:
-            # fill failed items with none
-            temps.extend([None] * len(batch))
-            
-        time.sleep(0.1)
-        
-    grid_df["temperature"] = temps
-    return grid_df.dropna(subset=["temperature"])
-
+@st.cache_data(ttl=3600*24)
+def fetch_india_geojson():
+    url = "https://gist.githubusercontent.com/jbrobst/56c13bbbf9d97d187fea01ca62ea5112/raw/e388c4cae20aa53cb5090210a42ebb9b765c0a36/india_states.geojson"
+    r = requests.get(url)
+    return r.json()
 
 tab1, tab2 = st.tabs(["🌍 India Live Map", "🏢 Single City Result"])
 
@@ -229,11 +192,11 @@ with tab1:
     col_h, col_btn = st.columns([4, 1])
     with col_h:
         st.markdown("""
-        <h3 style="color:white; margin:0; font-size:18px; font-weight:600;">
-            India Live UHI Map
+        <h3 style="color:#0f172a; margin:0; font-size:18px; font-weight:600;">
+            India Live UHI Heatmap
         </h3>
-        <p style="color:#475569; font-size:12px; margin:4px 0 12px 0;">
-            Temperature gradient across ~900 grid points · City severity markers
+        <p style="color:#64748b; font-size:12px; margin:4px 0 12px 0;">
+            Choropleth map with strict state-boundary masking
         </p>
         """, unsafe_allow_html=True)
     with col_btn:
@@ -242,10 +205,7 @@ with tab1:
     if load_btn:
         progress = st.progress(0, text="Initialising...")
         
-        progress.progress(10, text="Fetching temperature grid (this takes ~15 seconds)...")
-        grid_df = load_grid_data()
-        
-        progress.progress(60, text="Fetching live city data...")
+        progress.progress(20, text="Fetching live city data...")
         all_cities_data = []
         for i, city in enumerate(CITIES.keys()):
             res = predict_uhi(city)
@@ -254,17 +214,17 @@ with tab1:
                 res["lat"] = lat
                 res["lon"] = lon
                 all_cities_data.append(res)
-            progress.progress(60 + int((i/len(CITIES))*35), text=f"Processing {city}...")
+            import time
+            time.sleep(0.5) # Prevent Open-Meteo rate limiting which drops cities!
+            progress.progress(20 + int((i/len(CITIES))*80), text=f"Processing {city}...")
         
         progress.progress(100, text="Done!")
         progress.empty()
         
         st.session_state.map_data = all_cities_data
-        st.session_state.grid_data = grid_df
         
     if st.session_state.map_data:
         all_cities_data = st.session_state.map_data
-        grid_df = st.session_state.grid_data
         
         # Summary stats
         severe_count = len([r for r in all_cities_data if r["severity"] == "Severe"])
@@ -279,36 +239,40 @@ with tab1:
         c3.metric("Lowest UHI", f"+{min_uhi['uhi_intensity']}°C", min_uhi['city'])
         c4.metric("Average UHI", f"+{avg_uhi:.1f}°C", "across all cities")
         st.markdown("<br>", unsafe_allow_html=True)
+        
+        geojson_data = fetch_india_geojson()
+        df = pd.DataFrame(all_cities_data)
+        df["State"] = [CITIES[c]["State"] for c in df["city"]]
 
         fig = go.Figure()
         
-        if grid_df is not None and not grid_df.empty:
-            fig.add_trace(go.Densitymapbox(
-                lat=grid_df["lat"],
-                lon=grid_df["lon"],
-                z=grid_df["temperature"],
-                colorscale=[[0.0, "#06b6d4"], [0.25, "#22c55e"], [0.5, "#f59e0b"], [0.75, "#ef4444"], [1.0, "#7f1d1d"]],
-                radius=25,
-                opacity=0.6,
-                zmin=20,
-                zmax=45,
-                hoverinfo="z",
-                hovertemplate="Temp: %{z:.1f}°C<extra></extra>",
-                showscale=False
-            ))
-            
-        df = pd.DataFrame(all_cities_data)
+        # Add the State Choropleth Heatmap (Zero Ocean Bleed!)
+        fig.add_trace(go.Choroplethmapbox(
+            geojson=geojson_data,
+            locations=df["State"],
+            featureidkey="properties.ST_NM",
+            z=df["uhi_intensity"],
+            colorscale=[[0.0, "rgba(6,182,212,0.3)"], [0.25, "rgba(34,197,94,0.4)"], [0.5, "rgba(245,158,11,0.5)"], [1.0, "rgba(220,38,38,0.7)"]],
+            zmin=0, zmax=5,
+            marker_opacity=1.0,
+            marker_line_width=1,
+            marker_line_color="#1e293b",
+            hoverinfo="location+z",
+            hovertemplate="<b>%{location}</b><br>State UHI: +%{z:.1f}°C<extra></extra>",
+            showscale=False
+        ))
+        
+        # Add the Cities as exact glowing points on top
         fig.add_trace(go.Scattermapbox(
             lat=df["lat"],
             lon=df["lon"],
             mode="markers+text",
             text=df["city"],
             textposition="top right",
-            textfont=dict(color="white", size=11),
+            textfont=dict(color="#0f172a", size=11),
             marker=dict(
                 size=12,
-                color=df["color"],
-                line=dict(width=2, color='white')
+                color=df["color"]
             ),
             hovertext=df.apply(lambda x: f"<b>{x['city']}</b><br>Urban: {x['urban_temp']}°C<br>Rural: {x['rural_temp']}°C<br>UHI: +{x['uhi_intensity']}°C<br>Severity: {x['severity']}", axis=1),
             hoverinfo="text",
@@ -316,15 +280,15 @@ with tab1:
         
         fig.update_layout(
             mapbox=dict(
-                style="carto-darkmatter",
+                style="carto-positron",
                 center=dict(lat=22, lon=82),
                 zoom=3.8,
                 accesstoken=None
             ),
             height=560,
             margin=dict(r=0, t=0, l=0, b=0),
-            paper_bgcolor="#0f172a",
-            font_color="white",
+            paper_bgcolor="#f8fafc",
+            font_color="#334155",
             showlegend=False
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -420,18 +384,18 @@ with tab2:
                             marker=dict(opacity=opacities),
                             text=comp_df["uhi_intensity"].apply(lambda x: f"+{x}°C"),
                             textposition='outside',
-                            textfont=dict(color='white')
+                            textfont=dict(color='#0f172a')
                         ))
                         
                         fig_bar.update_layout(
                             title=f"UHI intensity comparison — {selected_city} highlighted",
-                            title_font=dict(color="white"),
-                            paper_bgcolor="#0a0e1a",
-                            plot_bgcolor="#0a0e1a",
-                            font_color="#94a3b8",
+                            title_font=dict(color="#0f172a"),
+                            paper_bgcolor="#f8fafc",
+                            plot_bgcolor="#f8fafc",
+                            font_color="#475569",
                             margin=dict(l=0, r=0, t=40, b=0),
                             height=400,
-                            xaxis=dict(showgrid=True, gridcolor="#1e293b", title="UHI Intensity (°C)"),
+                            xaxis=dict(showgrid=True, gridcolor="#e2e8f0", title="UHI Intensity (°C)"),
                             yaxis=dict(title="")
                         )
                         st.plotly_chart(fig_bar, use_container_width=True)
@@ -442,13 +406,41 @@ with tab2:
                     st.write("**Feature Vector Matrix:**")
                     feature_dict = dict(zip(FEATURE_COLUMNS, res['features']))
                     st.json(feature_dict)
+                    
+                    import math
+                    # Create a horizontal bar chart to visualize the feature matrix with a log axis
+                    fig_features = go.Figure(go.Bar(
+                        x=list(feature_dict.values()),
+                        y=list(feature_dict.keys()),
+                        orientation='h',
+                        marker=dict(
+                            color="rgba(6, 182, 212, 0.6)", # Cyan with opacity
+                            line=dict(color="#06b6d4", width=1)
+                        ),
+                        text=[f"{v:g}" for v in feature_dict.values()],
+                        textposition="outside",
+                        textfont=dict(color="#0f172a")
+                    ))
+                    
+                    fig_features.update_layout(
+                        title="Feature Distribution Analyzer (Log Scale View)",
+                        title_font=dict(color="#0f172a", size=14),
+                        paper_bgcolor="rgba(0,0,0,0)",
+                        plot_bgcolor="rgba(0,0,0,0)",
+                        font_color="#475569",
+                        height=350,
+                        margin=dict(l=0, r=30, t=40, b=0), # Add right margin so text doesn't explicitly clip
+                        xaxis=dict(type="log", title="Values (Logarithmic)", gridcolor="#e2e8f0"),
+                        yaxis=dict(title="")
+                    )
+                    st.plotly_chart(fig_features, use_container_width=True)
 
     elif not predict_btn:
         st.info("Select a city from the sidebar and click 'Predict UHI' to see results.")
 
 st.markdown("""
-<div style="border-top:1px solid #1e293b; padding:16px 0; margin-top:24px;">
-    <p style="color:#334155; font-size:11px; text-align:center; margin:0;">
+<div style="border-top:1px solid #e2e8f0; padding:16px 0; margin-top:24px;">
+    <p style="color:#64748b; font-size:11px; text-align:center; margin:0;">
         Live data: Open-Meteo API (non-commercial) · 
         Training: Kaggle UHI Monitoring Dataset · 
         Model: XGBoost Classifier · 
