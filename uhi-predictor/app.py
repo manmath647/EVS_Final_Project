@@ -22,7 +22,6 @@ st.markdown("""
 /* Hide Streamlit default elements */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
-header {visibility: hidden;}
 
 /* Main background */
 .stApp {
@@ -141,7 +140,7 @@ with st.sidebar:
     
     st.markdown('<p style="color:#64748b; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">Select City</p>', unsafe_allow_html=True)
     selected_city = st.selectbox("Select City", options=list(CITIES.keys()), label_visibility="collapsed")
-    predict_btn = st.button("Predict UHI →", type="primary", use_container_width=True)
+    predict_btn = st.button("Predict UHI →", type="primary", width="stretch")
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -200,7 +199,7 @@ with tab1:
         </p>
         """, unsafe_allow_html=True)
     with col_btn:
-        load_btn = st.button("Load map →", type="primary", use_container_width=True)
+        load_btn = st.button("Load map →", type="primary", width="stretch")
 
     if load_btn:
         progress = st.progress(0, text="Initialising...")
@@ -247,7 +246,7 @@ with tab1:
         fig = go.Figure()
         
         # Add the State Choropleth Heatmap (Zero Ocean Bleed!)
-        fig.add_trace(go.Choroplethmapbox(
+        fig.add_trace(go.Choroplethmap(
             geojson=geojson_data,
             locations=df["State"],
             featureidkey="properties.ST_NM",
@@ -263,27 +262,28 @@ with tab1:
         ))
         
         # Add the Cities as exact glowing points on top
-        fig.add_trace(go.Scattermapbox(
+        fig.add_trace(go.Scattermap(
             lat=df["lat"],
             lon=df["lon"],
             mode="markers+text",
             text=df["city"],
-            textposition="top right",
-            textfont=dict(color="#0f172a", size=11),
+            textposition="top center",
+            textfont=dict(color="#0f172a", size=11, family="sans-serif"),
             marker=dict(
                 size=12,
-                color=df["color"]
+                color=df["color"],
+                symbol="circle"
             ),
             hovertext=df.apply(lambda x: f"<b>{x['city']}</b><br>Urban: {x['urban_temp']}°C<br>Rural: {x['rural_temp']}°C<br>UHI: +{x['uhi_intensity']}°C<br>Severity: {x['severity']}", axis=1),
             hoverinfo="text",
         ))
         
         fig.update_layout(
-            mapbox=dict(
-                style="carto-positron",
+            map=dict(
+                style="open-street-map",
                 center=dict(lat=22, lon=82),
                 zoom=3.8,
-                accesstoken=None
+                pitch=35  # Adding a 3D perspective pitch!
             ),
             height=560,
             margin=dict(r=0, t=0, l=0, b=0),
@@ -291,14 +291,14 @@ with tab1:
             font_color="#334155",
             showlegend=False
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
         
         st.subheader("City Data")
         display_df = df[["city", "urban_temp", "rural_temp", "uhi_intensity", "severity", "color"]].copy()
         
         st.dataframe(
             display_df[["city", "urban_temp", "rural_temp", "uhi_intensity", "severity"]],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
             column_config={
                 "city": "City",
@@ -398,7 +398,7 @@ with tab2:
                             xaxis=dict(showgrid=True, gridcolor="#e2e8f0", title="UHI Intensity (°C)"),
                             yaxis=dict(title="")
                         )
-                        st.plotly_chart(fig_bar, use_container_width=True)
+                        st.plotly_chart(fig_bar, width="stretch")
                 
                 with st.expander("Technical details"):
                     from config import FEATURE_COLUMNS
@@ -433,7 +433,7 @@ with tab2:
                         xaxis=dict(type="log", title="Values (Logarithmic)", gridcolor="#e2e8f0"),
                         yaxis=dict(title="")
                     )
-                    st.plotly_chart(fig_features, use_container_width=True)
+                    st.plotly_chart(fig_features, width="stretch")
 
     elif not predict_btn:
         st.info("Select a city from the sidebar and click 'Predict UHI' to see results.")
