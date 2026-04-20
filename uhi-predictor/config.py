@@ -1,4 +1,4 @@
-# Configuration for the UHI Predictor Application
+#
 # This file contains the fixed city-level features and application constants.
 
 CITIES = {
