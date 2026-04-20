@@ -7,7 +7,7 @@ import streamlit as st
 import numpy as np
 from config import CITIES, FEATURE_COLUMNS, SEVERITY_COLORS, SEVERITY_LABELS
 
-MODEL_PATH = "model/uhi_model.pkl"
+MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model", "uhi_model.pkl")  # ✅ absolute path
 
 def load_model():
     """Load the trained XGBoost model if it exists, else return None for rule-based fallback."""
